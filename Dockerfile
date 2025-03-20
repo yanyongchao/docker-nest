@@ -28,10 +28,14 @@ FROM node:lts AS production-stage
 # 复制构建阶段的构建输出和 package.json 到生产镜像
 COPY --from=build-stage /app/dist /app/dist
 COPY --from=build-stage /app/package.json /app/package.json
-COPY --from=build-stage /app/node_modules /app/node_modules
+# COPY --from=build-stage /app/node_modules /app/node_modules
+
+RUN npm install -g pnpm
 
 # 设置工作目录
 WORKDIR /app
+
+RUN pnpm install --production
 
 # 暴露应用运行的端口（假设你的应用使用的是 3000）
 EXPOSE 3000
