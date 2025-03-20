@@ -1,0 +1,26 @@
+# 1. 使用 Node.js 镜像作为构建阶段
+FROM node:lts AS build-stage
+
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# 复制 package.json 和 pnpm-lock.yaml (如果存在的话)
+COPY package*.json pnpm*.yaml ./
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+# 使用 pnpm 安装依赖
+RUN pnpm install
+
+COPY . .
+
+# 运行构建
+RUN pnpm build
+
+EXPOSE 3000
+
+# 挂载 volume
+VOLUME [ "/app" ]
+
+CMD [ "node", "./dist/main.js" ]
